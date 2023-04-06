@@ -5,13 +5,14 @@ import com.cloudipsp.cloudipspsdk.exceptions.CloudipspException;
 import org.junit.Before;
 import org.junit.Test;
 import org.json.JSONObject;
+
 import java.util.Objects;
 
 public class GeneratePaymentUrlTest {
     private CloudIpspApi client;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Load private key and configure client
         final Configuration config = new Configuration()
                 .setSecretKey("test")
@@ -20,11 +21,12 @@ public class GeneratePaymentUrlTest {
     }
 
     @Test
-    public void testApiVersion() throws Exception {
-       assert Objects.equals(client.getSdkVersion(), "1.0.0");
+    public void testApiVersion() {
+        assert Objects.equals(client.getSdkVersion(), "1.0.0");
     }
+
     @Test
-    public void testApiCallFail() throws Exception {
+    public void testApiCallFail() {
         JSONObject payload = new JSONObject();
         payload.put("amount", 100.2);
         payload.put("currency", "EUR");
@@ -36,7 +38,7 @@ public class GeneratePaymentUrlTest {
     }
 
     @Test
-    public void testApiCallSuccsess() throws Exception {
+    public void testApiCallSuccess() {
         JSONObject payload = new JSONObject();
         payload.put("amount", 100);
         payload.put("currency", "EUR");

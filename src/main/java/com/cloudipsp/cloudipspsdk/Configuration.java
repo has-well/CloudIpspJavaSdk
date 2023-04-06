@@ -6,7 +6,7 @@ public class Configuration {
     private Integer merchantId;
     private String secretKey;
     private int maxRetries = 3;
-    protected String overrideServiceURL;
+    protected String overrideApiURL;
     private Integer clientConnections;
 
     /**
@@ -33,8 +33,7 @@ public class Configuration {
     }
 
     /**
-     *
-     * @param secretKey
+     * @param secretKey String
      * @return secretKey
      */
     public Configuration setSecretKey(String secretKey) {
@@ -60,17 +59,17 @@ public class Configuration {
     }
 
     /**
-     * @return overrideServiceURL Returns overridden MWS Service URL in Configuration
+     * @return overrideApiURL Returns overridden MWS Service URL in Configuration
      */
-    public String getOverrideServiceURL() {
-        return overrideServiceURL;
+    public String getOverrideApiURL() {
+        return overrideApiURL;
     }
 
     /**
      * @return Returns clientConnections from Configuration
      */
     public Integer getClientConnections() {
-        if(clientConnections != null && clientConnections != 0) {
+        if (clientConnections != null && clientConnections != 0) {
             return clientConnections;
         } else {
             return BaseConstants.MAX_CLIENT_CONNECTIONS;

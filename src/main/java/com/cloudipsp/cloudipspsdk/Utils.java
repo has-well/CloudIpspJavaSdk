@@ -22,8 +22,8 @@ public class Utils {
         URI uri;
         try {
             String endpoint = BaseConstants.endpoint;
-            if (configuration.getOverrideServiceURL() != null) {
-                endpoint = "https://" + configuration.getOverrideServiceURL();
+            if (configuration.getOverrideApiURL() != null) {
+                endpoint = "https://" + configuration.getOverrideApiURL();
             } else {
                 endpoint = "https://" + endpoint;
             }

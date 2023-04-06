@@ -22,21 +22,22 @@ public class CloudIpspApi extends BaseApiRequest implements CloudIpspSdk {
 
     /**
      * preparing request
-     * @param requset
+     *
+     * @param req JSONObject
      * @return JSONObject
      */
-    private JSONObject prepareRequest(JSONObject requset) {
+    private JSONObject prepareRequest(JSONObject req) {
         JSONObject paymentRequest = new JSONObject();
-        if (!requset.has("merchant_id")) {
-            requset.put("merchant_id", configuration.getMerchantId());
+        if (!req.has("merchant_id")) {
+            req.put("merchant_id", configuration.getMerchantId());
         }
-        if (!requset.has("order_id")) {
-            requset.put("order_id", Utils.generateOrderID());
+        if (!req.has("order_id")) {
+            req.put("order_id", Utils.generateOrderID());
         }
-        if (!requset.has("order_desc")) {
-            requset.put("order_desc", Utils.generateOrderDesc(requset.getString("order_id")));
+        if (!req.has("order_desc")) {
+            req.put("order_desc", Utils.generateOrderDesc(requset.getString("order_id")));
         }
-        requset.put("signature", Utils.generateSignature(requset, configuration.getSecretKey()));
+        req.put("signature", Utils.generateSignature(requset, configuration.getSecretKey()));
         paymentRequest.put("request", requset);
         return paymentRequest;
     }
