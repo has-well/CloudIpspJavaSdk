@@ -35,10 +35,10 @@ public class CloudIpspApi extends BaseApiRequest implements CloudIpspSdk {
             req.put("order_id", Utils.generateOrderID());
         }
         if (!req.has("order_desc")) {
-            req.put("order_desc", Utils.generateOrderDesc(requset.getString("order_id")));
+            req.put("order_desc", Utils.generateOrderDesc(req.getString("order_id")));
         }
-        req.put("signature", Utils.generateSignature(requset, configuration.getSecretKey()));
-        paymentRequest.put("request", requset);
+        req.put("signature", Utils.generateSignature(req, configuration.getSecretKey()));
+        paymentRequest.put("request", req);
         return paymentRequest;
     }
 
