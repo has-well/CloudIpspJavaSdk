@@ -16,9 +16,9 @@ public class PaymentApi extends BaseApiRequest {
     /**
      * Get payment url
      *
-     * @param paymentRequest
+     * @param paymentRequest client request
      * @return checkout response
-     * @throws CloudIpspException
+     * @throws CloudIpspException basic
      */
     public BaseApiResponse paymentUrl(final JSONObject paymentRequest) throws CloudIpspException {
         final URI payUrl = Utils.getServiceURI(configuration, "/checkout/url/");
@@ -27,9 +27,9 @@ public class PaymentApi extends BaseApiRequest {
     }
 
     /**
-     * @param paymentRequest
-     * @return
-     * @throws CloudIpspException
+     * @param paymentRequest client request
+     * @return api response
+     * @throws CloudIpspException basic
      */
     public BaseApiResponse paymentVerificationUrl(final JSONObject paymentRequest) throws CloudIpspException {
         final URI payUrl = Utils.getServiceURI(configuration, "/checkout/url/");
@@ -45,9 +45,9 @@ public class PaymentApi extends BaseApiRequest {
     }
 
     /**
-     * @param paymentRequest
-     * @return
-     * @throws CloudIpspException
+     * @param paymentRequest client request
+     * @return api response
+     * @throws CloudIpspException basic
      */
     public BaseApiResponse paymentToken(final JSONObject paymentRequest) throws CloudIpspException {
         final URI payUrl = Utils.getServiceURI(configuration, "/checkout/token/");
@@ -56,9 +56,9 @@ public class PaymentApi extends BaseApiRequest {
     }
 
     /**
-     * @param paymentRequest
-     * @return
-     * @throws CloudIpspException
+     * @param paymentRequest client request
+     * @return api response
+     * @throws CloudIpspException basic
      */
     public BaseApiResponse paymentSubscriptions(final JSONObject paymentRequest) throws CloudIpspException {
         configuration.setVersion("2.0");
@@ -86,6 +86,6 @@ public class PaymentApi extends BaseApiRequest {
             request.put("order_desc", Utils.generateOrderDesc(request.getString("order_id")));
         }
 
-        return fullRequest(request);
+        return fullRequest(request, true);
     }
 }

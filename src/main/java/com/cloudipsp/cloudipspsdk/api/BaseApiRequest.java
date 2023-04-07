@@ -90,11 +90,13 @@ public class BaseApiRequest {
             throw new CloudIpspException(e.getMessage(), null, null);
         }
         assert jsonResponse != null;
-        JSONObject resp = jsonResponse.getJSONObject("response");
-        if (resp.has("error_code")) {
-            throw new CloudIpspException(resp.getString("error_message"),
-                    Integer.toString(resp.getInt("error_code")),
-                    resp.getString("request_id"));
+        if (jsonResponse.get("response") instanceof JSONObject){
+            JSONObject resp = jsonResponse.getJSONObject("response");
+            if (resp.has("error_code")) {
+                throw new CloudIpspException(resp.getString("error_message"),
+                        Integer.toString(resp.getInt("error_code")),
+                        resp.getString("request_id"));
+            }
         }
         responseObject.setResponse(jsonResponse);
         responseObject.setRawResponse(rawResponseObject);
@@ -115,8 +117,8 @@ public class BaseApiRequest {
                                      final String httpMethodName,
                                      final Map<String, String> headers) throws CloudIpspException {
         final List<String> result = new ArrayList<>();
-        final StringBuffer response = new StringBuffer();
-        int responseCode = 0;
+        final StringBuilder response = new StringBuilder();
+        int responseCode;
         try (final CloseableHttpClient client = getHttpClientWithConnectionPool(configuration)) {
             final HttpUriRequest httpUriRequest = getHttpUriRequest(uri, httpMethodName, payload);
             for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -157,7 +159,7 @@ public class BaseApiRequest {
 
     /**
      * @return HttpPost
-     * @throws CloudIpspException
+     * @throws CloudIpspException basic
      */
     private static HttpUriRequest getHttpUriRequest(final URI uri, final String httpMethodName, final String payload)
             throws CloudIpspException {
@@ -179,7 +181,7 @@ public class BaseApiRequest {
      * @param request client params
      * @return full request
      */
-    public JSONObject fullRequest(JSONObject request) {
+    public JSONObject fullRequest(JSONObject request, boolean appendVersion) {
         JSONObject paymentRequest = new JSONObject();
         String protocolVersion = configuration.getVersion();
         if (protocolVersion.equals("2.0")) {
@@ -190,7 +192,9 @@ public class BaseApiRequest {
             paymentRequest.put("signature", Utils.generateSignatureV2(encodedData, configuration.getSecretKey()));
             paymentRequest.put("version", protocolVersion);
         } else {
-            request.put("version", protocolVersion);
+            if (appendVersion) {
+                request.put("version", protocolVersion);
+            }
             request.put("signature", Utils.generateSignature(request, configuration.getSecretKey()));
             paymentRequest = request;
         }

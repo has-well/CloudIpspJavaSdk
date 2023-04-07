@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 import java.util.Objects;
 
-public class GeneratePaymentTest {
+public class PaymentTest {
     private CloudIpspApi client;
     private PaymentApi pamentApi;
 
