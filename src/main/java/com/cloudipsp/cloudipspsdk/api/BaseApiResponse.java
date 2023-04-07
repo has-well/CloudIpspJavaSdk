@@ -1,6 +1,7 @@
 package com.cloudipsp.cloudipspsdk.api;
 
 import com.cloudipsp.cloudipspsdk.Utils;
+import com.cloudipsp.cloudipspsdk.exceptions.CloudIpspException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,6 +33,17 @@ public class BaseApiResponse {
      */
     public void setUrl(final URI url) {
         this.url = url;
+    }
+
+    /**
+     * @return Returns the checkout url
+     */
+    public URI getCheckoutUrl() throws CloudIpspException {
+        JSONObject response = this.getParsedResponse();
+        if (!response.has("checkout_url")){
+            throw new CloudIpspException("checkout_url not in response", null, null);
+        }
+        return URI.create(response.getString("checkout_url"));
     }
 
     /**

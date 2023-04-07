@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.util.Objects;
 
 public class PaymentTest {
@@ -49,6 +50,17 @@ public class PaymentTest {
         assert response.isSuccess();
         JSONObject order = response.getParsedResponse();
         assert order.has("checkout_url");
+    }
+
+    @Test
+    public void testApiCallGetURL() {
+        JSONObject payload = new JSONObject();
+        payload.put("amount", 100);
+        payload.put("currency", "EUR");
+        BaseApiResponse response = pamentApi.paymentUrl(payload);
+        assert response.isSuccess();
+        URI checkoutUrl = response.getCheckoutUrl();
+        assert !checkoutUrl.toString().isEmpty();
     }
 
     @Test
