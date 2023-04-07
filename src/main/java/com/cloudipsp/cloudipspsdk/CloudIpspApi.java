@@ -1,45 +1,32 @@
 package com.cloudipsp.cloudipspsdk;
 
-import com.cloudipsp.cloudipspsdk.api.BaseApiRequest;
-import com.cloudipsp.cloudipspsdk.api.BaseApiResponse;
-import com.cloudipsp.cloudipspsdk.exceptions.CloudipspException;
+import com.cloudipsp.cloudipspsdk.api.PaymentApi;
+import com.cloudipsp.cloudipspsdk.exceptions.CloudIpspException;
 
-import org.json.JSONObject;
+public class CloudIpspApi implements CloudIpspSdk {
+    private final Configuration configuration;
+    private PaymentApi paymentApi;
 
-import java.net.URI;
-
-public class CloudIpspApi extends BaseApiRequest implements CloudIpspSdk {
-
-    public CloudIpspApi(Configuration configuration) throws CloudipspException {
-        super(configuration);
-    }
-
-    public BaseApiResponse paymentUrl(final JSONObject paymentRequest) throws CloudipspException {
-        final URI payUrl = Utils.getServiceURI(configuration, "/checkout/url/");
-        JSONObject request = prepareRequest(paymentRequest);
-        return callAPI(payUrl, "POST", request.toString());
+    /**
+     *
+     * @param configuration Base configuration
+     * @throws CloudIpspException
+     */
+    public CloudIpspApi(Configuration configuration) throws CloudIpspException {
+        this.configuration = configuration;
+        loadApis();
     }
 
     /**
-     * preparing request
-     *
-     * @param req JSONObject
-     * @return JSONObject
+     * Load all api methods
      */
-    private JSONObject prepareRequest(JSONObject req) {
-        JSONObject paymentRequest = new JSONObject();
-        if (!req.has("merchant_id")) {
-            req.put("merchant_id", configuration.getMerchantId());
-        }
-        if (!req.has("order_id")) {
-            req.put("order_id", Utils.generateOrderID());
-        }
-        if (!req.has("order_desc")) {
-            req.put("order_desc", Utils.generateOrderDesc(req.getString("order_id")));
-        }
-        req.put("signature", Utils.generateSignature(req, configuration.getSecretKey()));
-        paymentRequest.put("request", req);
-        return paymentRequest;
+    private void loadApis() {
+        this.paymentApi = new PaymentApi(this.configuration);
+    }
+
+    @Override
+    public PaymentApi getPaymentApi() {
+        return this.paymentApi;
     }
 
     @Override

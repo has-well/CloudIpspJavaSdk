@@ -2,7 +2,7 @@ package com.cloudipsp.cloudipspsdk.exceptions;
 
 import java.io.IOException;
 
-public class CloudipspException extends RuntimeException {
+public class CloudIpspException extends RuntimeException {
     /**
      * error message
      */
@@ -20,7 +20,7 @@ public class CloudipspException extends RuntimeException {
      * @param message An error message
      * @param code    An error code
      */
-    public CloudipspException(String message, String code, String request_id) {
+    public CloudIpspException(String message, String code, String request_id) {
         this.message = message;
         this.error_code = code;
         this.request_id = request_id;
@@ -29,9 +29,18 @@ public class CloudipspException extends RuntimeException {
     /**
      * base Exception
      */
-    public CloudipspException(IOException ioException) {
+    public CloudIpspException(IOException ioException) {
         this.message = ioException.getMessage();
         this.error_code = null;
         this.request_id = null;
     }
+    @Override
+    public String toString() {
+        return "CloudIpspsError[" +
+                "message='" + message + '\'' +
+                ", error_code=" + error_code +
+                ", request_id='" + request_id + '\'' +
+                ']';
+    }
+
 }

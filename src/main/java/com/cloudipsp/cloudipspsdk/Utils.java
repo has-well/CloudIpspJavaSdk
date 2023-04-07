@@ -1,9 +1,10 @@
 package com.cloudipsp.cloudipspsdk;
 
 import com.cloudipsp.cloudipspsdk.api.BaseConstants;
-import com.cloudipsp.cloudipspsdk.exceptions.CloudipspException;
+import com.cloudipsp.cloudipspsdk.exceptions.CloudIpspException;
 import org.json.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
+import java.util.Base64;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,14 +12,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.StringJoiner;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class Utils {
     /**
      *
      * @return URI
      */
-    public static URI getServiceURI(Configuration configuration, String path) throws CloudipspException {
+    public static URI getServiceURI(Configuration configuration, String path) throws CloudIpspException {
         URI uri;
         try {
             String endpoint = BaseConstants.endpoint;
@@ -29,7 +33,7 @@ public class Utils {
             }
             uri = new URI(endpoint + "/api" + path);
         } catch (URISyntaxException e) {
-            throw new CloudipspException(e.getMessage(), null, null);
+            throw new CloudIpspException(e.getMessage(), null, null);
         }
         return uri;
     }
@@ -66,18 +70,55 @@ public class Utils {
      * get signature v1
      * @return string
      */
-    public static String generateSignature(JSONObject requset, String primaryKey){
+    public static String generateSignature(JSONObject request, String primaryKey){
+        List<Map.Entry<String, Object>> sorted_request = sortData(request);
         StringJoiner signature = new StringJoiner(BaseConstants.DELIMITER);
         signature.add(primaryKey);
-        Iterator<String> keys = requset.keys();
 
-        while (keys.hasNext()) {
-            String key = keys.next();
-            String value = requset.get(key).toString();
-            if (!value.isEmpty()){
-                signature.add(value);
+        sorted_request.forEach(e -> {
+            if (!e.getValue().toString().isEmpty()) {
+                signature.add(e.getValue().toString());
             }
-        }
+        });
         return DigestUtils.sha1Hex(signature.toString());
+    }
+
+    /**
+     * signatrue V2
+     * @param request
+     * @param primaryKey
+     * @return
+     */
+    public static String generateSignatureV2(String request, String primaryKey){
+        StringJoiner signature = new StringJoiner(BaseConstants.DELIMITER);
+        signature.add(primaryKey);
+        signature.add(request);
+        return DigestUtils.sha1Hex(signature.toString());
+    }
+
+    /**
+     *
+     * @param jsonObject init
+     * @return sorted object
+     */
+    public static List<Map.Entry<String, Object>> sortData(JSONObject jsonObject) {
+        List<Map.Entry<String, Object>> entries = new ArrayList<>(jsonObject.toMap().entrySet());
+
+        Collections.sort(entries, new Comparator<Map.Entry<String, Object>>() {
+            @Override
+            public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
+                return o1.getKey().compareTo(o2.getKey());
+            }
+        });
+
+        return entries;
+    }
+
+    public static String toBase64(String data) {
+        return Base64.getEncoder().encodeToString(data.getBytes());
+    }
+
+    public static String fromBase64(String data) {
+        return new String(Base64.getDecoder().decode(data.getBytes()));
     }
 }

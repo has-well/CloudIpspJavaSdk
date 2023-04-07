@@ -1,7 +1,7 @@
 package com.cloudipsp.cloudipspsdk.api;
 
 import com.cloudipsp.cloudipspsdk.Utils;
-import com.cloudipsp.cloudipspsdk.exceptions.CloudipspException;
+import com.cloudipsp.cloudipspsdk.exceptions.CloudIpspException;
 import com.cloudipsp.cloudipspsdk.Configuration;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
@@ -20,7 +20,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +29,7 @@ import org.json.JSONObject;
 public class BaseApiRequest {
     final protected Configuration configuration;
 
-    public BaseApiRequest(final Configuration configuration) throws CloudipspException {
+    public BaseApiRequest(final Configuration configuration) throws CloudIpspException {
         this.configuration = configuration;
     }
 
@@ -40,7 +39,7 @@ public class BaseApiRequest {
 
     public BaseApiResponse callAPI(final URI uri,
                                    final String httpMethodName,
-                                   final String request) throws CloudipspException {
+                                   final String request) throws CloudIpspException {
         return processRequest(uri, request, httpMethodName);
     }
 
@@ -54,7 +53,7 @@ public class BaseApiRequest {
      */
     private BaseApiResponse processRequest(final URI uri,
                                            final String payload,
-                                           final String httpMethodName) throws CloudipspException {
+                                           final String httpMethodName) throws CloudIpspException {
         List<String> response;
         String rawResponseObject = null;
         JSONObject jsonResponse = null;
@@ -88,12 +87,12 @@ public class BaseApiRequest {
                 }
             }
         } catch (InterruptedException | JSONException e) {
-            throw new CloudipspException(e.getMessage(), null, null);
+            throw new CloudIpspException(e.getMessage(), null, null);
         }
         assert jsonResponse != null;
         JSONObject resp = jsonResponse.getJSONObject("response");
         if (resp.has("error_code")) {
-            throw new CloudipspException(resp.getString("error_message"),
+            throw new CloudIpspException(resp.getString("error_message"),
                     Integer.toString(resp.getInt("error_code")),
                     resp.getString("request_id"));
         }
@@ -114,7 +113,7 @@ public class BaseApiRequest {
     private List<String> sendRequest(final URI uri,
                                      final String payload,
                                      final String httpMethodName,
-                                     final Map<String, String> headers) throws CloudipspException {
+                                     final Map<String, String> headers) throws CloudIpspException {
         final List<String> result = new ArrayList<>();
         final StringBuffer response = new StringBuffer();
         int responseCode = 0;
@@ -137,7 +136,7 @@ public class BaseApiRequest {
                 response.append(EntityUtils.toString(responses.getEntity()));
             }
         } catch (IOException exception) {
-            throw new CloudipspException(exception);
+            throw new CloudIpspException(exception);
         }
         result.add(String.valueOf(responseCode));
         result.add(response.toString());
@@ -158,10 +157,10 @@ public class BaseApiRequest {
 
     /**
      * @return HttpPost
-     * @throws CloudipspException
+     * @throws CloudIpspException
      */
     private static HttpUriRequest getHttpUriRequest(final URI uri, final String httpMethodName, final String payload)
-            throws CloudipspException {
+            throws CloudIpspException {
         switch (httpMethodName) {
             case "GET":
                 return new HttpGet(uri);
@@ -170,8 +169,35 @@ public class BaseApiRequest {
                 httpPost.setEntity(new StringEntity(payload, StandardCharsets.UTF_8));
                 return httpPost;
             default:
-                throw new CloudipspException("Invalid HTTP method " + httpMethodName, null, null);
+                throw new CloudIpspException("Invalid HTTP method " + httpMethodName, null, null);
         }
+    }
+
+    /**
+     * generate full request by version
+     *
+     * @param request client params
+     * @return full request
+     */
+    public JSONObject fullRequest(JSONObject request) {
+        JSONObject paymentRequest = new JSONObject();
+        String protocolVersion = configuration.getVersion();
+        if (protocolVersion.equals("2.0")) {
+            JSONObject dataV2 = new JSONObject();
+            dataV2.put("order", request);
+            String encodedData = Utils.toBase64(dataV2.toString());
+            paymentRequest.put("data", encodedData);
+            paymentRequest.put("signature", Utils.generateSignatureV2(encodedData, configuration.getSecretKey()));
+            paymentRequest.put("version", protocolVersion);
+        } else {
+            request.put("version", protocolVersion);
+            request.put("signature", Utils.generateSignature(request, configuration.getSecretKey()));
+            paymentRequest = request;
+        }
+
+        JSONObject finalRequest = new JSONObject();
+        finalRequest.put("request", paymentRequest);
+        return finalRequest;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.cloudipsp.cloudipspsdk.api;
 
+import com.cloudipsp.cloudipspsdk.Utils;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
@@ -65,6 +66,17 @@ public class BaseApiResponse {
      */
     public JSONObject getResponse() {
         return response.getJSONObject("response");
+    }
+
+    /**
+     * @return Returns the JSON Response from Response
+     */
+    public JSONObject getParsedResponse() {
+        JSONObject resp = response.getJSONObject("response");
+        if (resp.has("data")){
+            return new JSONObject(Utils.fromBase64(resp.getString("data"))).getJSONObject("order");
+        }
+        return resp;
     }
 
     /**

@@ -5,6 +5,8 @@ import com.cloudipsp.cloudipspsdk.api.BaseConstants;
 public class Configuration {
     private Integer merchantId;
     private String secretKey;
+    private String creditKey;
+    private String version = "1.0.1";
     private int maxRetries = 3;
     protected String overrideApiURL;
     private Integer clientConnections;
@@ -38,6 +40,22 @@ public class Configuration {
      */
     public Configuration setSecretKey(String secretKey) {
         this.secretKey = secretKey;
+        return this;
+    }
+
+    /**
+     * @return returns the private key object from the Configuration
+     */
+    public String getCreditKey() {
+        return creditKey;
+    }
+
+    /**
+     * @param creditKey String
+     * @return secretKey
+     */
+    public Configuration setCreditKey(String creditKey) {
+        this.secretKey = creditKey;
         return this;
     }
 
@@ -82,6 +100,24 @@ public class Configuration {
      */
     public Configuration setClientConnections(int clientConnections) {
         this.clientConnections = clientConnections;
+        return this;
+    }
+
+    /**
+     *
+     * @return version
+     */
+    public String getVersion(){
+        return this.version;
+    }
+
+    /**
+     *
+     * @param version
+     * @return
+     */
+    public Configuration setVersion(String version){
+        this.version = version;
         return this;
     }
 
