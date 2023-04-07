@@ -80,7 +80,7 @@ public class PaymentTest {
         BaseApiResponse response = pamentApi.paymentSubscriptions(payload);
         assert response.isSuccess();
         JSONObject order = response.getParsedResponse();
-        assert order.getJSONObject("order").has("checkout_url");
+        assert order.has("checkout_url");
     }
 
 
