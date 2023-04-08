@@ -12,9 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.StringJoiner;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.stream.Collectors;
 import java.util.List;
 
 public class Utils {
@@ -102,11 +100,10 @@ public class Utils {
      * @return sorted object
      */
     public static List<Map.Entry<String, Object>> sortData(JSONObject jsonObject) {
-        List<Map.Entry<String, Object>> entries = new ArrayList<>(jsonObject.toMap().entrySet());
-
-        entries.sort(Map.Entry.comparingByKey());
-
-        return entries;
+        return jsonObject.toMap().entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toList());
     }
 
     public static String toBase64(String data) {

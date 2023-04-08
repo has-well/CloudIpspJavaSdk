@@ -47,11 +47,12 @@ public class PaymentTest {
     public void testApiCallFail() {
         JSONObject payload = new JSONObject();
         payload.put("amount", 1.10);
-        payload.put("currency", currency);
+        payload.put("currency", "III");
         try {
             pamentApi.paymentUrl(payload);
         } catch (final CloudIpspException e) {
             assert Objects.equals(e.error_code, "1007");
+            assert Objects.equals(e.message, "Parameter `currency` is incorrect");
         }
     }
 

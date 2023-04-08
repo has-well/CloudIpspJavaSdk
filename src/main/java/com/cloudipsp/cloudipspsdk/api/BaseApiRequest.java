@@ -219,8 +219,10 @@ public class BaseApiRequest {
         if (!request.has("merchant_id")) {
             request.put("merchant_id", configuration.getMerchantId());
         }
-        if (request.has("amount") || request.get("amount") instanceof Float) {
-            request.put("amount", request.getFloat("amount") * 100);
+        if (request.has("amount")) {
+            if (request.get("amount") instanceof Double){
+                request.put("amount", (int)(request.getDouble("amount") * 100));
+            }
         }
         JSONObject paymentRequest = new JSONObject();
         String protocolVersion = configuration.getVersion();
