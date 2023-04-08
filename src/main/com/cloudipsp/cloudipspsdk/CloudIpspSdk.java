@@ -9,7 +9,9 @@ import com.cloudipsp.cloudipspsdk.api.PciDss;
  */
 public interface CloudIpspSdk {
     PaymentApi getPaymentApi();
+
     OrderApi getOrderApi();
+
     PciDss getPciDssApi();
 
 }
