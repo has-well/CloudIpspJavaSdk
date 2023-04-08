@@ -2,12 +2,14 @@ package com.cloudipsp.cloudipspsdk;
 
 import com.cloudipsp.cloudipspsdk.api.OrderApi;
 import com.cloudipsp.cloudipspsdk.api.PaymentApi;
+import com.cloudipsp.cloudipspsdk.api.PciDss;
 import com.cloudipsp.cloudipspsdk.exceptions.CloudIpspException;
 
 public class CloudIpspApi implements CloudIpspSdk {
     private final Configuration configuration;
     private PaymentApi paymentApi;
     private OrderApi orderApi;
+    private PciDss pciDssApi;
 
     /**
      *
@@ -25,6 +27,7 @@ public class CloudIpspApi implements CloudIpspSdk {
     private void loadApis() {
         this.paymentApi = new PaymentApi(this.configuration);
         this.orderApi = new OrderApi(this.configuration);
+        this.pciDssApi = new PciDss(this.configuration);
     }
 
     @Override
@@ -38,7 +41,7 @@ public class CloudIpspApi implements CloudIpspSdk {
     }
 
     @Override
-    public String getSdkVersion() {
-        return "1.0.0";
+    public PciDss getPciDssApi() {
+        return this.pciDssApi;
     }
 }

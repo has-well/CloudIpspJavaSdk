@@ -55,3 +55,16 @@ If Maven project, add sdk dependency in <dependencies> section:
     BaseApiResponse response = orderApi.Capture(payload);
     JSONObject order = response.getParsedResponse();
 ```
+**response will be an object with the following getters:**
+
+* `getStatus()` - int HTTP status code
+* `getResponse()` - the response serialized into a JSONObject
+* `getRawResponse()` - the raw JSON String response body
+* `getParsedResponse()` - the response serialized into a JSONObject and converted by version
+* `getUrl()` - the URL for the REST call the SDK calls, for troubleshooting purposes
+* `getRawRequest()` - the JSON request body String sent
+* `getRetries()` - usually 0, but reflects the number of times a request was retried due to throttling or other server-side issue
+* `getDuration()` - duration in milliseconds of SDK function call
+* `isSuccess()` - returns true for a 200
+* `getReportList()` - the response serialized into a JSONList used by getting reports
+* `getCheckoutUrl()` - return URI

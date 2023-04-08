@@ -85,9 +85,9 @@ public class Utils {
 
     /**
      * signatrue V2
-     * @param request
-     * @param primaryKey
-     * @return
+     * @param request json
+     * @param primaryKey string
+     * @return sha1 string
      */
     public static String generateSignatureV2(String request, String primaryKey){
         StringJoiner signature = new StringJoiner(BaseConstants.DELIMITER);
@@ -104,12 +104,7 @@ public class Utils {
     public static List<Map.Entry<String, Object>> sortData(JSONObject jsonObject) {
         List<Map.Entry<String, Object>> entries = new ArrayList<>(jsonObject.toMap().entrySet());
 
-        Collections.sort(entries, new Comparator<Map.Entry<String, Object>>() {
-            @Override
-            public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
-                return o1.getKey().compareTo(o2.getKey());
-            }
-        });
+        entries.sort(Map.Entry.comparingByKey());
 
         return entries;
     }

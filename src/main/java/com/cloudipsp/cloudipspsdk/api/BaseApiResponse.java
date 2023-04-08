@@ -84,8 +84,10 @@ public class BaseApiResponse {
             return response;
         }
     }
-
-    public JSONArray getTransactionList() {
+    /**
+     * @return Returns the JSONList Response from Response
+     */
+    public JSONArray getReportList() {
         return response.getJSONArray("response");
     }
 

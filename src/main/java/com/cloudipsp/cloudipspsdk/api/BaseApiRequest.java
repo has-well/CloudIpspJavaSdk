@@ -33,64 +33,102 @@ public class BaseApiRequest {
         this.configuration = configuration;
     }
 
+    /**
+     *
+     * @param retryCount number of retry
+     * @return long
+     */
     private long getExponentialWaitTime(int retryCount) {
         return ((long) Math.pow(2, retryCount) * 1000L);
     }
 
     public BaseApiResponse callAPI(final URI uri,
                                    final String httpMethodName,
-                                   final String request) throws CloudIpspException {
-        return processRequest(uri, request, httpMethodName);
+                                   final JSONObject request) throws CloudIpspException {
+        return processRequest(uri, request.toString(), httpMethodName);
     }
 
     /**
-     * Helper method to send the request and also retry in case the request is throttled
+     * Processes an HTTP request and handles retries if necessary.
      *
-     * @param uri            the uri to be executed
-     * @param payload        the payload to be sent with the request
-     * @param httpMethodName the HTTP request method(GET,PUT,POST etc) to be used
-     * @return the BaseApiResponse
+     * @param uri            The URI of the request.
+     * @param payload        The request payload as a string.
+     * @param httpMethodName The HTTP method to use for the request.
+     * @return A BaseApiResponse containing the API response.
+     * @throws CloudIpspException If there's an error during request processing.
      */
     private BaseApiResponse processRequest(final URI uri,
                                            final String payload,
                                            final String httpMethodName) throws CloudIpspException {
-        List<String> response;
-        String rawResponseObject = null;
-        JSONObject jsonResponse = null;
-
         final BaseApiResponse responseObject = new BaseApiResponse();
         responseObject.setUrl(uri);
-        final Map<String, String> headers = Utils.getDefaultHeaders();
         responseObject.setMethod(httpMethodName);
+
+        final Map<String, String> headers = Utils.getDefaultHeaders();
         responseObject.setHeaders(headers);
         responseObject.setRawRequest(payload);
+
         try {
             long millisBefore = System.currentTimeMillis();
-            response = sendRequest(uri, payload, httpMethodName, headers);
-            int statusCode = Integer.parseInt(response.get(BaseConstants.RESPONSE_STATUS_CODE));
-            int retry = 0;
-            while (BaseConstants.serviceErrors.containsValue(statusCode) &&
-                    retry < configuration.getMaxRetries()) {
-                retry++;
-                long waitTime = getExponentialWaitTime(retry);
-                Thread.sleep(waitTime);
-                response = sendRequest(uri, payload, httpMethodName, headers);
-                statusCode = Integer.parseInt(response.get(BaseConstants.RESPONSE_STATUS_CODE));
-            }
-            responseObject.setRetries(retry);
-            responseObject.setStatus(statusCode);
+            List<String> response = executeRequestWithRetries(uri, payload, httpMethodName, headers);
             responseObject.setDuration(System.currentTimeMillis() - millisBefore);
-            if (response.get(BaseConstants.RESPONSE_STRING) != null) {
-                rawResponseObject = response.get(BaseConstants.RESPONSE_STRING);
-                if (!StringUtils.isEmpty(response.get(BaseConstants.RESPONSE_STRING))) {
-                    jsonResponse = new JSONObject(response.get(BaseConstants.RESPONSE_STRING));
-                }
+
+            int statusCode = Integer.parseInt(response.get(BaseConstants.RESPONSE_STATUS_CODE));
+            responseObject.setStatus(statusCode);
+
+            String rawResponseObject = response.get(BaseConstants.RESPONSE_STRING);
+            if (!StringUtils.isEmpty(rawResponseObject)) {
+                JSONObject jsonResponse = new JSONObject(rawResponseObject);
+                responseObject.setResponse(jsonResponse);
+                responseObject.setRawResponse(rawResponseObject);
+                processResponseErrors(jsonResponse);
             }
         } catch (InterruptedException | JSONException e) {
             throw new CloudIpspException(e.getMessage(), null, null);
         }
-        assert jsonResponse != null;
-        if (jsonResponse.get("response") instanceof JSONObject){
+
+        return responseObject;
+    }
+
+    /**
+     * Executes an HTTP request with retries in case of server errors.
+     *
+     * @param uri            The URI of the request.
+     * @param payload        The request payload as a string.
+     * @param httpMethodName The HTTP method to use for the request.
+     * @param headers        The request headers as a map.
+     * @return A list containing the response status code and response body.
+     * @throws InterruptedException If the thread is interrupted during sleep.
+     * @throws CloudIpspException   If there's an error during request execution.
+     */
+    private List<String> executeRequestWithRetries(final URI uri,
+                                                   final String payload,
+                                                   final String httpMethodName,
+                                                   final Map<String, String> headers)
+            throws InterruptedException, CloudIpspException {
+        List<String> response = sendRequest(uri, payload, httpMethodName, headers);
+        int statusCode = Integer.parseInt(response.get(BaseConstants.RESPONSE_STATUS_CODE));
+        int retry = 0;
+
+        while (BaseConstants.serviceErrors.containsValue(statusCode) && retry < configuration.getMaxRetries()) {
+            retry++;
+            long waitTime = getExponentialWaitTime(retry);
+            Thread.sleep(waitTime);
+            response = sendRequest(uri, payload, httpMethodName, headers);
+            statusCode = Integer.parseInt(response.get(BaseConstants.RESPONSE_STATUS_CODE));
+        }
+
+        return response;
+    }
+
+    /**
+     * Processes the JSON response and throws an exception if it contains errors.
+     *
+     * @param jsonResponse The JSON response object.
+     * @throws CloudIpspException If the response contains an error.
+     */
+    private void processResponseErrors(JSONObject jsonResponse) throws CloudIpspException {
+        if (jsonResponse.get("response") instanceof JSONObject) {
             JSONObject resp = jsonResponse.getJSONObject("response");
             if (resp.has("error_code")) {
                 throw new CloudIpspException(resp.getString("error_message"),
@@ -98,10 +136,6 @@ public class BaseApiRequest {
                         resp.getString("request_id"));
             }
         }
-        responseObject.setResponse(jsonResponse);
-        responseObject.setRawResponse(rawResponseObject);
-
-        return responseObject;
     }
 
     /**
@@ -181,7 +215,13 @@ public class BaseApiRequest {
      * @param request client params
      * @return full request
      */
-    public JSONObject fullRequest(JSONObject request, boolean appendVersion) {
+    public JSONObject fullRequest(JSONObject request, String key, boolean appendVersion) {
+        if (!request.has("merchant_id")) {
+            request.put("merchant_id", configuration.getMerchantId());
+        }
+        if (request.has("amount") || request.get("amount") instanceof Float) {
+            request.put("amount", request.getFloat("amount") * 100);
+        }
         JSONObject paymentRequest = new JSONObject();
         String protocolVersion = configuration.getVersion();
         if (protocolVersion.equals("2.0")) {
@@ -189,13 +229,13 @@ public class BaseApiRequest {
             dataV2.put("order", request);
             String encodedData = Utils.toBase64(dataV2.toString());
             paymentRequest.put("data", encodedData);
-            paymentRequest.put("signature", Utils.generateSignatureV2(encodedData, configuration.getSecretKey()));
+            paymentRequest.put("signature", Utils.generateSignatureV2(encodedData, key));
             paymentRequest.put("version", protocolVersion);
         } else {
             if (appendVersion) {
                 request.put("version", protocolVersion);
             }
-            request.put("signature", Utils.generateSignature(request, configuration.getSecretKey()));
+            request.put("signature", Utils.generateSignature(request, key));
             paymentRequest = request;
         }
 
@@ -204,4 +244,16 @@ public class BaseApiRequest {
         return finalRequest;
     }
 
+    /**
+     * Checks if the required parameter is present in the JSON object.
+     *
+     * @param paymentRequest The JSON object containing the payment request details.
+     * @param parameterName  The name of the required parameter.
+     * @throws CloudIpspException If the required parameter is missing.
+     */
+    public void checkRequiredParameter(JSONObject paymentRequest, String parameterName) throws CloudIpspException {
+        if (!paymentRequest.has(parameterName)) {
+            throw new CloudIpspException("param " + parameterName + " is required", "1000", null);
+        }
+    }
 }

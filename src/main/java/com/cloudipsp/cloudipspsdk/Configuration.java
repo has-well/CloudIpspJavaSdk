@@ -55,7 +55,7 @@ public class Configuration {
      * @return secretKey
      */
     public Configuration setCreditKey(String creditKey) {
-        this.secretKey = creditKey;
+        this.creditKey = creditKey;
         return this;
     }
 
@@ -112,13 +112,10 @@ public class Configuration {
     }
 
     /**
-     *
-     * @param version
-     * @return
+     * @param version of request
      */
-    public Configuration setVersion(String version){
+    public void setVersion(String version){
         this.version = version;
-        return this;
     }
 
 }
