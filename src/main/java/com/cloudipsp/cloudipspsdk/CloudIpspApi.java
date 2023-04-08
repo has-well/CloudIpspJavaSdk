@@ -6,7 +6,7 @@ import com.cloudipsp.cloudipspsdk.api.PciDss;
 import com.cloudipsp.cloudipspsdk.exceptions.CloudIpspException;
 
 public class CloudIpspApi implements CloudIpspSdk {
-    private final Configuration configuration;
+    private final CloudIpspConfiguration configuration;
     private PaymentApi paymentApi;
     private OrderApi orderApi;
     private PciDss pciDssApi;
@@ -16,7 +16,7 @@ public class CloudIpspApi implements CloudIpspSdk {
      * @param configuration Base configuration
      * @throws CloudIpspException basic
      */
-    public CloudIpspApi(Configuration configuration) throws CloudIpspException {
+    public CloudIpspApi(CloudIpspConfiguration configuration) throws CloudIpspException {
         this.configuration = configuration;
         loadApis();
     }

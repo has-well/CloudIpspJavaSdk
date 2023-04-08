@@ -1,6 +1,6 @@
 package com.cloudipsp.cloudipspsdk.api;
 
-import com.cloudipsp.cloudipspsdk.Configuration;
+import com.cloudipsp.cloudipspsdk.CloudIpspConfiguration;
 import com.cloudipsp.cloudipspsdk.Utils;
 import com.cloudipsp.cloudipspsdk.exceptions.CloudIpspException;
 import org.json.JSONObject;
@@ -9,7 +9,7 @@ import java.net.URI;
 
 public class PaymentApi extends BaseApiRequest {
 
-    public PaymentApi(Configuration configuration) throws CloudIpspException {
+    public PaymentApi(CloudIpspConfiguration configuration) throws CloudIpspException {
         super(configuration);
     }
 

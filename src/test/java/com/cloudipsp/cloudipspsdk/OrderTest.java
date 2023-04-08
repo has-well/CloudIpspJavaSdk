@@ -19,7 +19,7 @@ public class OrderTest {
     @Before
     public void setUp() {
         // Load private key and configure client
-        final Configuration config = new Configuration()
+        final CloudIpspConfiguration config = new CloudIpspConfiguration()
                 .setSecretKey("test")
                 .setMerchantId(1396424);
         CloudIpspApi client = new CloudIpspApi(config);

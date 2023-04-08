@@ -20,7 +20,7 @@ public class Utils {
      *
      * @return URI
      */
-    public static URI getServiceURI(Configuration configuration, String path) throws CloudIpspException {
+    public static URI getServiceURI(CloudIpspConfiguration configuration, String path) throws CloudIpspException {
         URI uri;
         try {
             String endpoint = BaseConstants.endpoint;

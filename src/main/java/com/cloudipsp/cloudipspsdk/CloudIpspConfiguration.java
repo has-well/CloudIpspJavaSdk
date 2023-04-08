@@ -2,7 +2,7 @@ package com.cloudipsp.cloudipspsdk;
 
 import com.cloudipsp.cloudipspsdk.api.BaseConstants;
 
-public class Configuration {
+public class CloudIpspConfiguration {
     private Integer merchantId;
     private String secretKey;
     private String creditKey;
@@ -22,7 +22,7 @@ public class Configuration {
      * @param merchantId The public key id of the merchant
      * @return the Configuration object
      */
-    public Configuration setMerchantId(final Integer merchantId) {
+    public CloudIpspConfiguration setMerchantId(final Integer merchantId) {
         this.merchantId = merchantId;
         return this;
     }
@@ -38,7 +38,7 @@ public class Configuration {
      * @param secretKey String
      * @return secretKey
      */
-    public Configuration setSecretKey(String secretKey) {
+    public CloudIpspConfiguration setSecretKey(String secretKey) {
         this.secretKey = secretKey;
         return this;
     }
@@ -54,7 +54,7 @@ public class Configuration {
      * @param creditKey String
      * @return secretKey
      */
-    public Configuration setCreditKey(String creditKey) {
+    public CloudIpspConfiguration setCreditKey(String creditKey) {
         this.creditKey = creditKey;
         return this;
     }
@@ -71,7 +71,7 @@ public class Configuration {
      *                   errors or throttling errors, in Configuration
      * @return the Configuration object
      */
-    public Configuration setMaxRetries(final int maxRetries) {
+    public CloudIpspConfiguration setMaxRetries(final int maxRetries) {
         this.maxRetries = maxRetries;
         return this;
     }
@@ -98,7 +98,7 @@ public class Configuration {
      * @param clientConnections Sets the maximum number of Client Connections to be made
      * @return the Configuration object
      */
-    public Configuration setClientConnections(int clientConnections) {
+    public CloudIpspConfiguration setClientConnections(int clientConnections) {
         this.clientConnections = clientConnections;
         return this;
     }

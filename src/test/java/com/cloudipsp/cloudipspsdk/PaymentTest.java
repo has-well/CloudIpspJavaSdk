@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class PaymentTest {
     private CloudIpspApi client;
-    private Configuration config;
+    private CloudIpspConfiguration config;
     private PaymentApi pamentApi;
     private PciDss pciDssApi;
 
@@ -26,7 +26,7 @@ public class PaymentTest {
     @Before
     public void setUp() {
         // Load private key and configure client
-        config = new Configuration()
+        config = new CloudIpspConfiguration()
                 .setSecretKey("test")
                 .setCreditKey("testcredit")
                 .setMerchantId(1396424);

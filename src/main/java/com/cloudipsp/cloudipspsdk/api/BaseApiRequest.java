@@ -2,7 +2,7 @@ package com.cloudipsp.cloudipspsdk.api;
 
 import com.cloudipsp.cloudipspsdk.Utils;
 import com.cloudipsp.cloudipspsdk.exceptions.CloudIpspException;
-import com.cloudipsp.cloudipspsdk.Configuration;
+import com.cloudipsp.cloudipspsdk.CloudIpspConfiguration;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
@@ -27,9 +27,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class BaseApiRequest {
-    final protected Configuration configuration;
+    final protected CloudIpspConfiguration configuration;
 
-    public BaseApiRequest(final Configuration configuration) throws CloudIpspException {
+    public BaseApiRequest(final CloudIpspConfiguration configuration) throws CloudIpspException {
         this.configuration = configuration;
     }
 
@@ -182,7 +182,7 @@ public class BaseApiRequest {
     /**
      * @return CloseableHttpClient
      */
-    private static CloseableHttpClient getHttpClientWithConnectionPool(final Configuration configuration) {
+    private static CloseableHttpClient getHttpClientWithConnectionPool(final CloudIpspConfiguration configuration) {
         final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
         connectionManager.setMaxTotal(configuration.getClientConnections());
         connectionManager.setDefaultMaxPerRoute(configuration.getClientConnections());
