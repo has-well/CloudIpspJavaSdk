@@ -12,7 +12,6 @@ public class CloudIpspApi implements CloudIpspSdk {
     private PciDss pciDssApi;
 
     /**
-     *
      * @param configuration Base configuration
      * @throws CloudIpspException basic
      */
