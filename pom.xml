@@ -42,6 +42,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <build>
         <directory>target</directory>
         <sourceDirectory>src/main</sourceDirectory>
@@ -62,11 +63,23 @@
             </plugin>
         </plugins>
     </build>
+
     <scm>
         <connection>scm:git@github.com:has-well/CloudIpspJavaSdk.git</connection>
         <developerConnection>scm:git@github.com:has-well/CloudIpspJavaSdk.git</developerConnection>
         <url>https://github.com/has-well/CloudIpspJavaSdk</url>
     </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <developers>
         <developer>
