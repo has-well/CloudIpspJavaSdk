@@ -114,8 +114,9 @@ public class OrderTest {
     @Test
     public void testReports() {
         JSONObject payload = new JSONObject();
-        LocalDate currentDate = LocalDate.now();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String dateString = "20.01.2023";
+        LocalDate currentDate = LocalDate.parse(dateString, dateFormatter);
         String currentDateStr = currentDate.format(dateFormatter);
         LocalDate dateMinusTenDays = currentDate.minusDays(1);
         String dateMinusTenDaysStr = dateMinusTenDays.format(dateFormatter);
