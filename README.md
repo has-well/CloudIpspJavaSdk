@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="200" height="200" src="https://avatars0.githubusercontent.com/u/15383021?s=200&v=4">
+  <img alt="cipsplogo" width="200" height="200" src="https://avatars0.githubusercontent.com/u/15383021?s=200&v=4">
 </p>
 
 # CloudIpspSdk[Fondy]
@@ -29,31 +29,35 @@ If Maven project, add sdk dependency in <dependencies> section:
 
 ## Simple start
 ```java
-    final Configuration config = new Configuration()
-                                        .setSecretKey("test")
-                                        .setMerchantId(1396424);
-    client = new CloudIpspApi(config);
-    pamentApi = client.getPaymentApi(); // Get payment api instance
-    orderApi = client.getOrderApi(); // Get api instance for working with orders
-    /**
-     * Generate payment request
-     */
-    JSONObject payload = new JSONObject();
-    payload.put("currency", "EUR");
-    payload.put("amount", 100);
-    payload.put("order_id", "test123");
-    BaseApiResponse response = pamentApi.paymentUrl(payload);
-    JSONObject order = response.getParsedResponse();
-    URI checkout_url = response.getCheckoutUrl();
-    /**
-     * Generate capture request
-     */
-    JSONObject payload = new JSONObject();
-    payload.put("currency", "EUR");
-    payload.put("amount", 100);
-    payload.put("order_id", "test123");
-    BaseApiResponse response = orderApi.Capture(payload);
-    JSONObject order = response.getParsedResponse();
+public class Main {
+    public static void main(String[] args) {
+        final Configuration config = new Configuration()
+                .setSecretKey("test")
+                .setMerchantId(1396424);
+        client = new CloudIpspApi(config);
+        pamentApi = client.getPaymentApi(); // Get payment api instance
+        orderApi = client.getOrderApi(); // Get api instance for working with orders
+        /**
+         * Generate payment request
+         */
+        JSONObject payload = new JSONObject();
+        payload.put("currency", "EUR");
+        payload.put("amount", 100);
+        payload.put("order_id", "test123");
+        BaseApiResponse response = pamentApi.paymentUrl(payload);
+        JSONObject order = response.getParsedResponse();
+        URI checkout_url = response.getCheckoutUrl();
+        /**
+         * Generate capture request
+         */
+        JSONObject payload = new JSONObject();
+        payload.put("currency", "EUR");
+        payload.put("amount", 100);
+        payload.put("order_id", "test123");
+        BaseApiResponse response = orderApi.Capture(payload);
+        JSONObject order = response.getParsedResponse();
+    }
+}
 ```
 **response will be an object with the following getters:**
 
